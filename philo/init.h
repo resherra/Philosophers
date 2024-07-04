@@ -13,16 +13,43 @@
 #ifndef INIT_H
 #define INIT_H
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/time.h>
-#include <pthread.h>
+#include <stdio.h> //printf
+#include <string.h> //memset
+#include <stdlib.h> // malloc, free
+#include <unistd.h> //usleep
+#include <sys/time.h> //gettimeofday
+#include <pthread.h> //pthread: create, detach, join | mutex: init, lock, unlock, destroy
+
+typedef struct s_shared t_shared;
+
+typedef struct s_fork
+{
+    pthread_mutex_t fork;
+    int id;
+} t_fork;
+
+typedef struct s_ph
+{
+    int id;
+    int meals;
+    pthread_t thread;
+    t_fork *right_fork;
+    t_fork *left_fork;
+    t_shared *shared;
+} t_ph;
 
 
-//memset, printf, malloc, free, write
-//usleep, gettimeofday
-//pthread_create, pthread_detach, pthread_join, pthread_mutex_init, pthread_mutex_destroy, pthread_mutex_lock, pthread_mutex_unlock
+typedef struct s_shared
+{
+    int n_philos;
+    int ttd;
+    int tte;
+    int tts;
+    int must_eat_times;
+    int start_time;
+    t_ph *philos;
+    t_fork *forks;
+} t_shared;
+
 
 #endif
