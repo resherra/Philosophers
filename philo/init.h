@@ -46,6 +46,7 @@ typedef struct s_shared
 	int					tts;
 	int					must_eat_times;
 	int					start_time;
+	int                 died;
 	t_ph				*philos;
 	t_fork				*forks;
 }						t_shared;

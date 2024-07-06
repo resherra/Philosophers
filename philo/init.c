@@ -66,6 +66,7 @@ int	sanitize(int ac, char **av, t_shared *shared)
 
 void	*routine(void *arg)
 {
+//    lock r_fork && l_fork
 	(void)arg;
 	printf("testing\n");
 	return (NULL);
@@ -88,13 +89,14 @@ int	main(int ac, char **av)
 		return (1);
 	}
 
-
 	// printf("philos: %d\nttd: %d\ntte: %d\ntts: %d\nmeals: %d\n",
-//			shared->n_philos, shared->ttd, shared->tte, shared->tts,
-//			shared->must_eat_times);
+    //			shared->n_philos, shared->ttd, shared->tte, shared->tts,
+    //			shared->must_eat_times);
 	// parsing end
 
 	//initialize
+
+	shared->died = 0;
 
 	//  allocate philos
 	shared->philos = malloc(shared->n_philos * sizeof(t_ph));
@@ -155,7 +157,6 @@ int	main(int ac, char **av)
             i++;
         }
     }
-
 
 	//join
 	i = 0;
