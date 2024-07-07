@@ -10,8 +10,8 @@
 #                                                                              #
 # **************************************************************************** #
 
-CFLAGS=-Wall -Wextra -Werror -fsanitize=thread
-SRC=init.c
+CFLAGS=-Wall -Wextra -Werror
+SRC=init.c utils.c allocate_init.c
 OBJS=$(SRC:.c=.o)
 NAME=philo
 

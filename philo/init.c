@@ -12,91 +12,68 @@
 
 #include "init.h"
 
-int	ft_atoi(char *str)
+//args error handling
+int args_error_handling(char *str)
 {
-	int	result;
-	int	i;
-
-	result = 0;
-	i = 0;
-	while (str[i] == ' ')
-		i++;
-	while (str[i] == '+' || str[i] == '-')
-	{
-		if (str[i] == '-' || str[i + 1] == '+')
-			return (-1);
-		else if (str[i] == '+')
-		{
-			i++;
-			break ;
-		}
-		i++;
-	}
-	while (str[i] >= '0' && str[i] <= '9')
-	{
-		result *= 10;
-		result += str[i] - '0';
-		i++;
-	}
-	if (str[i])
-		return (-1);
-	return (result);
+    printf("%s\n", str);
+    return 1;
 }
 
+//sanitize the input
 int	sanitize(int ac, char **av, t_shared *shared)
 {
 	if ((shared->n_philos = ft_atoi(av[1])) == -1)
-    {
-        printf("Invalid philos number\n");
-        return (1);
-    }
+	    return args_error_handling("Invalid philos number!");
 	else if ((shared->ttd = ft_atoi(av[2])) == -1)
-    {
-        printf("Invalid time to die\n");
-		return (1);
-    }
+	    return args_error_handling("Invalid time to die!");
 	else if ((shared->tte = ft_atoi(av[3])) == -1)
-    {
-        printf("Invalid time to eat\n");
-		return (1);
-    }
+        return args_error_handling("Invalid time to eat!");
 	else if ((shared->tts = ft_atoi(av[4])) == -1)
-    {
-        printf("Invalid time to sleep\n");
-		return (1);
-    }
+        return args_error_handling("Invalid time to sleep!");
 	else if (ac == 6)
 	{
         if ((shared->must_eat_times = ft_atoi(av[5])) == -1)
-        {
-            printf("Invalid must eat times\n");
-            return (1);
-        }
+            return args_error_handling("Invalid must eat times!");
     }
 	return (0);
 }
 
 
+//ACTIONS
+
+long get_curr_time()
+{
+    struct timeval	time;
+
+    gettimeofday(&time, NULL);
+    return (time.tv_sec * 1000 + time.tv_usec / 1000);
+}
+
+//  eat
 void    ft_eat(t_ph *philo)
 {
     pthread_mutex_lock(&philo->right_fork->fork);
-    printf("%d  has taken a fork\n", philo->id);
+    printf("%d has taken a fork\n", philo->id);
     pthread_mutex_lock(&philo->left_fork->fork);
-    printf("%d  has taken a fork\n", philo->id);
+    printf("%d has taken a fork\n", philo->id);
     printf("%d is eating\n", philo->id);
     philo->meals_count++;
     philo->eating = 1;
+    philo->last_meal = get_curr_time();
     usleep(philo->shared->tte * 1000);
+    philo->eating = 0;
     pthread_mutex_unlock(&philo->right_fork->fork);
     pthread_mutex_unlock(&philo->left_fork->fork);
 }
 
+//  sleep
 void    ft_sleep(t_ph *philo)
 {
     printf("%d is sleeping\n", philo->id);
     usleep(philo->shared->tts * 1000);
 }
 
+//  think
 void ft_think(t_ph *philo)
 {
     printf("%d is thinking\n", philo->id);
@@ -104,11 +81,17 @@ void ft_think(t_ph *philo)
 
 void	*routine(void *arg)
 {
-    //    lock r_fork && l_fork
     t_ph *philo = (t_ph *)arg;
+
+
+    /*
+     *  put even philosopher on sleep
+     * */
 
     while (1)
     {
+        if (philo->shared->dead)
+            break;
         ft_eat(philo);
         ft_sleep(philo);
         ft_think(philo);
@@ -116,91 +99,90 @@ void	*routine(void *arg)
     return (NULL);
 }
 
+
+int is_dead(t_shared *shared)
+{
+    printf("jack\n");
+    int i = 0;
+
+    while (i < shared->n_philos)
+    {
+        if (get_curr_time() > shared->philos[i].last_meal && !shared->philos[i].eating)
+        {
+            printf("%d died\n", shared->philos[i].id);
+            pthread_mutex_lock(&shared->dead_mutex);
+            shared->dead = 1;
+            pthread_mutex_unlock(&shared->dead_mutex);
+            return 1;
+        }
+        i++;
+    }
+    return 0;
+}
+
+int is_all_full(t_shared *shared)
+{
+    int i = 0;
+
+    while (i < shared->n_philos)
+    {
+        if (shared->philos[i].meals_count >= shared->must_eat_times)
+        {
+            pthread_mutex_lock(&shared->eat_mutex);
+            shared->phil_is_full++;
+            pthread_mutex_unlock(&shared->eat_mutex);
+        }
+        i++;
+    }
+    if (shared->phil_is_full == shared->n_philos)
+    {
+        pthread_mutex_lock(&shared->full_mutex);
+        shared->all_full = 1;
+        pthread_mutex_unlock(&shared->full_mutex);
+        return 1;
+    }
+    return 0;
+}
+
+
 int	main(int ac, char **av)
 {
 	t_shared *shared;
 
-	// parsing begin
+	// parsing starts
 	if (ac != 5 && ac != 6)
 	{
 		printf("You should provide more/less args!\n");
 		return (1);
 	}
 	shared = malloc(sizeof(t_shared));
+
+	if (!shared)
+	    return 1;
 	if (sanitize(ac, av, shared))
-	{
-		printf("Args are not valid!\n");
-		return (1);
-	}
-
-
-	//  parsing end
-
-	//  init
-	shared->dead = 0;
-
-	//  allocate philos
-	shared->philos = malloc(shared->n_philos * sizeof(t_ph));
-	if (!shared->philos)
 		return (1);
 
-    //  allocate forks --> mutexes
-	shared->forks = malloc(shared->n_philos * sizeof(t_fork));
-	if (!shared->forks)
-		return (1);
+	//  allocate && init
+	if (init_all(shared))
+	    return 1;
 
-	//  initialize forks;
+	//threads
 	int i = 0;
+
 	while (i < shared->n_philos)
 	{
-		pthread_mutex_init(&shared->forks[i].fork, NULL);
-		i++;
+	    pthread_create(&shared->philos[i].thread, NULL, routine, &shared->philos[i]);
+	    i++;
 	}
 
-    //  initialize philosopher
-	i = 0;
-	while (i < shared->n_philos)
-	{
-		shared->philos[i].id = i + 1; //id
-		shared->philos[i].meals_count = 0; //meals counter
-		shared->philos[i].shared = shared; //shared
-
-		//  assign forks
-        if ((shared->philos[i].id % 2) == 0)
-        {
-            shared->philos[i].right_fork = &shared->forks[shared->philos[i].id - 1];
-            shared->philos[i].left_fork = &shared->forks[(i + 1) % shared->n_philos];
-        }
-        else
-        {
-            shared->philos[i].left_fork = &shared->forks[shared->philos[i].id - 1];
-            shared->philos[i].right_fork = &shared->forks[(i + 1) % shared->n_philos];
-        }
-		i++;
-	}
-
-	//actual routine
-    shared->must_eat_times = -1;
-
-	if (shared->must_eat_times == 0)
-	    return 0;
-    else if (shared->n_philos == 1)
-        return 0;
-    else
-    {
-        int i = 0;
-        while (i < shared->n_philos)
-        {
-            pthread_create(&shared->philos[i].thread, NULL, routine, &shared->philos[i]);
-            i++;
-        }
-
-    }
-
-    //  monitor
+    // Monitor philosophers
     while (1)
     {
+        //==> Run until a philo die
+        //==> They all ate the number of meals they need to
 
+        if (is_dead(shared) || is_all_full(shared))
+            break;
     }
 
 	//join
@@ -210,5 +192,6 @@ int	main(int ac, char **av)
 		pthread_join(shared->philos[i].thread, NULL);
 		i++;
 	}
+
 	return (0);
 }
