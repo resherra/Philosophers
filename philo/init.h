@@ -13,6 +13,7 @@
 #ifndef INIT_H
 # define INIT_H
 
+
 # include <pthread.h>  //pthread: create, detach, join | mutex: init, lock,	unlock, destroy
 # include <stdio.h>    //printf
 # include <stdlib.h>   // malloc, free
@@ -24,31 +25,32 @@ typedef struct s_shared	t_shared;
 
 typedef struct s_fork
 {
-	pthread_mutex_t		fork;
-	int					id;
+	pthread_mutex_t		fork; //fork || mutex
 }						t_fork;
 
 typedef struct s_ph
 {
-	int					id;
-	int					meals;
-	pthread_t			thread;
-	t_fork				*right_fork;
-	t_fork				*left_fork;
-	t_shared			*shared;
+    int					id; //philosopher id
+	int					meals_count; //meals count;
+    int                 eating; //is currently eating flag | 0 or 1
+    int                 last_meal; //last meal
+    pthread_t			thread; //thread
+	t_fork				*right_fork; //rf
+	t_fork				*left_fork; //lf
+	t_shared			*shared; //pointer to global data
 }						t_ph;
 
 typedef struct s_shared
 {
-	int					n_philos;
-	int					ttd;
-	int					tte;
-	int					tts;
-	int					must_eat_times;
-	int					start_time;
-	int                 died;
-	t_ph				*philos;
-	t_fork				*forks;
+	int					n_philos; //number of philos
+	int					ttd; //time to die
+	int					tte; //time to eat
+	int					tts; //time to sleep
+	int					must_eat_times; //optional
+	int                 dead; //dead flag | 0 or 1
+	int                 all_full; //all full flag | 0 or 1
+	t_ph				*philos; //philosophers
+	t_fork				*forks; //forks
 }						t_shared;
 
 #endif
