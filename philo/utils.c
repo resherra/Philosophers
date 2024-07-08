@@ -42,3 +42,37 @@ int	ft_atoi(char *str)
         return (-1);
     return (result);
 }
+
+long get_curr_time()
+{
+    struct timeval	time;
+
+    gettimeofday(&time, NULL);
+    return (time.tv_sec * 1000 + time.tv_usec / 1000);
+}
+
+
+static long get_elapsed(struct timeval start, struct timeval end)
+{
+    return (end.tv_sec - start.tv_sec) * 1000000L + (end.tv_usec - start.tv_usec);
+}
+
+void ft_usleep(long dur)
+{
+    struct timeval start;
+    struct timeval curr;
+    long elapsed;
+    long rem;
+
+    gettimeofday(&start, NULL);
+    elapsed = 0;
+    while (elapsed < dur)
+    {
+        gettimeofday(&curr, NULL);
+        elapsed = get_elapsed(start, curr);
+        rem = dur - elapsed;
+
+        if (rem > 1000)
+            usleep(rem / 2);
+    }
+}

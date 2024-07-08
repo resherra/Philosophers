@@ -59,9 +59,12 @@ int init_all(t_shared *shared)
     shared->dead = 0;
     shared->all_full = 0;
     shared->phil_is_full = 0;
+    shared->start_time = get_curr_time();
     pthread_mutex_init(&shared->dead_mutex, NULL);
-    pthread_mutex_init(&shared->eat_mutex, NULL);
     pthread_mutex_init(&shared->full_mutex, NULL);
+    pthread_mutex_init(&shared->eat_mutex, NULL);
+    pthread_mutex_init(&shared->generic_mutex, NULL);
+
 
 
     if (allocate(shared))

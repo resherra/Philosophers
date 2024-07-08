@@ -32,8 +32,7 @@ typedef struct s_ph
 {
     int					id; //philosopher id
 	int					meals_count; //meals count;
-    int                 eating; //is currently eating flag | 0 or 1
-    long                 last_meal; //last meal
+    long                last_meal; //last meal
     pthread_t			thread; //thread
 	t_fork				*right_fork; //rf
 	t_fork				*left_fork; //lf
@@ -49,21 +48,38 @@ typedef struct s_shared
 	int					must_eat_times; //optional
 	int                 dead; //dead flag | 0 or 1
 	int                 all_full; //all full flag | 0 or 1
-	int                 phil_is_full;
+	int                 phil_is_full; //increment the full philos
+	long                start_time;
 	t_ph				*philos; //philosophers
 	t_fork				*forks; //forks
     pthread_mutex_t     dead_mutex;
     pthread_mutex_t     full_mutex;
     pthread_mutex_t     eat_mutex;
+    pthread_mutex_t     generic_mutex;
+
 
 }						t_shared;
 
 
 
+//parsing
+int	sanitize(int ac, char **av, t_shared *shared);
+int args_error_handling(char *str);
+
 //utils
 int	ft_atoi(char *str);
+long get_curr_time();
+void ft_usleep(long dur);
 
 //allocate & init
 int init_all(t_shared *shared);
+
+//ACTIONS
+void	*routine(void *arg);
+
+//monitoring
+int is_dead(t_shared *shared);
+int is_all_full(t_shared *shared);
+
 
 #endif
