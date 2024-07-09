@@ -12,27 +12,33 @@
 
 #include "init.h"
 
-int args_error_handling(char *str)
+int	args_error_handling(char *str)
 {
-    printf("%s\n", str);
-    return 1;
+	printf("%s\n", str);
+	return (1);
 }
 
-//sanitize the input
 int	sanitize(int ac, char **av, t_shared *shared)
 {
-    if ((shared->n_philos = ft_atoi(av[1])) == -1)
-        return args_error_handling("Invalid philos number!");
-    else if ((shared->ttd = ft_atoi(av[2])) == -1)
-        return args_error_handling("Invalid time to die!");
-    else if ((shared->tte = ft_atoi(av[3])) == -1)
-        return args_error_handling("Invalid time to eat!");
-    else if ((shared->tts = ft_atoi(av[4])) == -1)
-        return args_error_handling("Invalid time to sleep!");
-    else if (ac == 6)
-    {
-        if ((shared->must_eat_times = ft_atoi(av[5])) == -1)
-            return args_error_handling("Invalid must eat times!");
+    shared->n_philos = ft_atoi(av[1]);
+	if (shared->n_philos == -1)
+		return (args_error_handling("Invalid philos number!"));
+	shared->ttd = ft_atoi(av[2]);
+	if (shared->ttd == -1)
+		return (args_error_handling("Invalid time to die!"));
+	shared->tte = ft_atoi(av[3]);
+	if (shared->tte == -1)
+		return (args_error_handling("Invalid time to eat!"));
+	shared->tts = ft_atoi(av[4]);
+	if (shared->tts == -1)
+		return (args_error_handling("Invalid time to sleep!"));
+	if (ac == 6)
+	{
+	    shared->must_eat_times = ft_atoi(av[5]);
+		if (shared->must_eat_times == -1)
+            return (args_error_handling("Invalid must eat times!"));
     }
-    return (0);
+	else
+	    shared->must_eat_times = -1;
+	return (0);
 }

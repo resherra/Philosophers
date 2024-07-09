@@ -52,27 +52,11 @@ long get_curr_time()
 }
 
 
-static long get_elapsed(struct timeval start, struct timeval end)
+void	ft_usleep(size_t milliseconds)
 {
-    return (end.tv_sec - start.tv_sec) * 1000000L + (end.tv_usec - start.tv_usec);
-}
+    size_t	start;
 
-void ft_usleep(long dur)
-{
-    struct timeval start;
-    struct timeval curr;
-    long elapsed;
-    long rem;
-
-    gettimeofday(&start, NULL);
-    elapsed = 0;
-    while (elapsed < dur)
-    {
-        gettimeofday(&curr, NULL);
-        elapsed = get_elapsed(start, curr);
-        rem = dur - elapsed;
-
-        if (rem > 1000)
-            usleep(rem / 2);
-    }
+    start = get_curr_time();
+    while ((get_curr_time() - start) < milliseconds)
+        usleep(500);
 }
