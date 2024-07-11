@@ -12,77 +12,64 @@
 
 #include "init.h"
 
-static int allocate(t_shared *shared)
+static int	allocate(t_shared *shared)
 {
-    shared->philos = malloc(shared->n_philos * sizeof(t_ph));
-    if (!shared->philos)
-        return 1;
-    shared->forks = malloc(shared->n_philos * sizeof(t_fork));
-    if (!shared->forks)
-        return (1);
-    return 0;
+	shared->philos = malloc(shared->n_philos * sizeof(t_ph));
+	if (!shared->philos)
+		return (1);
+	shared->forks = malloc(shared->n_philos * sizeof(t_fork));
+	if (!shared->forks)
+		return (1);
+	return (0);
 }
 
-static void init_data(t_shared *shared)
+static void	init_data(t_shared *shared)
 {
-    shared->dead = false;
-    shared->all_full = false;
-    shared->phil_is_full = 0;
-    shared->start_time = get_curr_time();
-
-    pthread_mutex_init(&shared->dead_mutex, NULL);
-    pthread_mutex_init(&shared->full_mutex, NULL);
-    pthread_mutex_init(&shared->eat_mutex, NULL);
-    pthread_mutex_init(&shared->generic_mutex, NULL);
+	shared->dead = false;
+	shared->all_full = false;
+	shared->phil_is_full = 0;
+	shared->start_time = get_curr_time();
+	pthread_mutex_init(&shared->dead_mutex, NULL);
+	pthread_mutex_init(&shared->full_mutex, NULL);
+	pthread_mutex_init(&shared->generic_mutex, NULL);
 }
 
-static void    init_forks(t_shared *shared)
+static void	init_forks(t_shared *shared)
 {
-    int i;
+	int	i;
 
-    i = 0;
-    while (i < shared->n_philos)
-    {
-        shared->forks[i].id = i;
-        pthread_mutex_init(&shared->forks[i].fork, NULL);
-        i++;
-    }
+	i = 0;
+	while (i < shared->n_philos)
+		pthread_mutex_init(&shared->forks[i++].fork, NULL);
 }
 
-static void init_philos(t_shared *shared)
+static void	init_philos(t_shared *shared)
 {
-    int i;
+	int	i;
 
-    i = 0;
-    while (i < shared->n_philos)
-    {
-        shared->philos[i].id = i + 1;
-        shared->philos[i].meals_count = 0;
-        shared->philos[i].shared = shared;
-        shared->philos[i].last_meal = get_curr_time();
-
-        //assign right fork
-        shared->philos[i].right_fork = &shared->forks[shared->philos[i].id - 1];
-
-        //assign left fork
-        if (shared->philos[i].id == shared->n_philos)
-            shared->philos[i].left_fork = &shared->forks[0];
-        else
-            shared->philos[i].left_fork = &shared->forks[shared->philos[i].id];
-
-//        printf("philo id: %d\nright fork id: %d\nleft fork id: %d\n",
-//               shared->philos[i].id, shared->philos[i].right_fork->id, shared->philos[i].left_fork->id);
-        i++;
-    }
-//    exit(1);
+	i = 0;
+	while (i < shared->n_philos)
+	{
+		shared->philos[i].id = i + 1;
+		shared->philos[i].meals_count = 0;
+		shared->philos[i].shared = shared;
+		shared->philos[i].last_meal = get_curr_time();
+		shared->philos[i].checked = false;
+		shared->philos[i].right_fork = &shared->forks[shared->philos[i].id - 1];
+		if (shared->philos[i].id == shared->n_philos)
+			shared->philos[i].left_fork = &shared->forks[0];
+		else
+			shared->philos[i].left_fork = &shared->forks[shared->philos[i].id];
+		i++;
+	}
 }
 
-int init_all(t_shared *shared)
+int	init_all(t_shared *shared)
 {
-    if (allocate(shared))
-        return 1;
-    init_forks(shared);
-    init_philos(shared);
-    init_data(shared);
-    return 0;
+	if (allocate(shared))
+		return (1);
+	init_forks(shared);
+	init_philos(shared);
+	init_data(shared);
+	return (0);
 }

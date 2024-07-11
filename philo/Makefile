@@ -10,10 +10,9 @@
 #                                                                              #
 # **************************************************************************** #
 
-CFLAGS=-Wall -Wextra -Werror -fsanitize=thread -g
-# CFLAGS=-Wall -Wextra -Werror -fsanitize=address -g
-# CFLAGS=-Wall -Wextra -Werror
-SRC=init.c utils.c allocate_init.c actions.c parse.c monitoring.c routines.c
+# CFLAGS=-Wall -Wextra -Werror -fsanitize=thread -g
+CFLAGS=-Wall -Wextra -Werror
+SRC=init.c utils.c allocate_init.c actions.c parse.c monitoring.c
 OBJS=$(SRC:.c=.o)
 NAME=philo
 

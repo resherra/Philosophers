@@ -20,7 +20,7 @@ int	args_error_handling(char *str)
 
 int	sanitize(int ac, char **av, t_shared *shared)
 {
-    shared->n_philos = ft_atoi(av[1]);
+	shared->n_philos = ft_atoi(av[1]);
 	if (shared->n_philos == -1)
 		return (args_error_handling("Invalid philos number!"));
 	shared->ttd = ft_atoi(av[2]);
@@ -34,11 +34,11 @@ int	sanitize(int ac, char **av, t_shared *shared)
 		return (args_error_handling("Invalid time to sleep!"));
 	if (ac == 6)
 	{
-	    shared->must_eat_times = ft_atoi(av[5]);
-		if (shared->must_eat_times == -1)
-            return (args_error_handling("Invalid must eat times!"));
-    }
+		shared->must_eat_times = ft_atoi(av[5]);
+		if (shared->must_eat_times == -1 || !shared->must_eat_times)
+			return (args_error_handling("Invalid must eat times!"));
+	}
 	else
-	    shared->must_eat_times = -1;
+		shared->must_eat_times = -1;
 	return (0);
 }

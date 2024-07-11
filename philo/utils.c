@@ -12,51 +12,46 @@
 
 #include "init.h"
 
-int	ft_atoi(char *str)
+long	get_curr_time(void)
 {
-    int	result;
-    int	i;
+	struct timeval	time;
 
-    result = 0;
-    i = 0;
-    while (str[i] == ' ')
-        i++;
-    while (str[i] == '+' || str[i] == '-')
-    {
-        if (str[i] == '-' || str[i + 1] == '+')
-            return (-1);
-        else if (str[i] == '+')
-        {
-            i++;
-            break ;
-        }
-        i++;
-    }
-    while (str[i] >= '0' && str[i] <= '9')
-    {
-        result *= 10;
-        result += str[i] - '0';
-        i++;
-    }
-    if (str[i])
-        return (-1);
-    return (result);
+	gettimeofday(&time, NULL);
+	return (time.tv_sec * 1000 + time.tv_usec / 1000);
 }
-
-long get_curr_time()
-{
-    struct timeval	time;
-
-    gettimeofday(&time, NULL);
-    return (time.tv_sec * 1000 + time.tv_usec / 1000);
-}
-
 
 void	ft_usleep(size_t milliseconds)
 {
-    size_t	start;
+	size_t	start;
 
-    start = get_curr_time();
-    while ((get_curr_time() - start) < milliseconds)
-        usleep(500);
+	start = get_curr_time();
+	while ((get_curr_time() - start) < milliseconds)
+		usleep(100);
+}
+
+int	ft_atoi(char *str)
+{
+	int	result;
+	int	i;
+
+	result = 0;
+	i = 0;
+	while (str[i] == ' ')
+		i++;
+	while (str[i] == '+' || str[i] == '-')
+	{
+		if (str[i] == '-' || str[i + 1] == '+')
+			return (-1);
+		else if (str[i] == '+')
+		{
+			i++;
+			break ;
+		}
+		i++;
+	}
+	while (str[i] >= '0' && str[i] <= '9')
+		result = result * 10 + (str[i++] - '0');
+	if (str[i])
+		return (-1);
+	return (result);
 }

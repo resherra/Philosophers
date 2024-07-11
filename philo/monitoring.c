@@ -12,49 +12,65 @@
 
 #include "init.h"
 
-int is_dead(t_shared *shared)
+int	is_dead(t_shared *shared)
 {
-    int i;
+	int		i;
+	long	last_meal;
 
-    i = 0;
-    while (i < shared->n_philos)
-    {
-        pthread_mutex_lock(&shared->generic_mutex);
-        long last_meal = shared->philos[i].last_meal;
-        pthread_mutex_unlock(&shared->generic_mutex);
-        if (get_curr_time() - last_meal >= shared->ttd)
-        {
-            pthread_mutex_lock(&shared->dead_mutex);
-            shared->dead = true;
-            pthread_mutex_unlock(&shared->dead_mutex);
-            print("died", &shared->philos[i]);
-            return 1;
-        }
-        i++;
-    }
-    return 0;
+	i = 0;
+	while (i < shared->n_philos)
+	{
+		pthread_mutex_lock(&shared->generic_mutex);
+		last_meal = shared->philos[i].last_meal;
+		pthread_mutex_unlock(&shared->generic_mutex);
+		if (get_curr_time() - last_meal >= shared->ttd)
+		{
+			pthread_mutex_unlock(&shared->philos[i].right_fork->fork);
+			print("died", &shared->philos[i]);
+			pthread_mutex_lock(&shared->dead_mutex);
+			shared->dead = true;
+			pthread_mutex_unlock(&shared->dead_mutex);
+			return (1);
+		}
+		i++;
+	}
+	return (0);
 }
 
-int is_all_full(t_shared *shared)
+static int	check_is_all_full(t_shared *shared)
 {
-    int i = 0;
+	if (shared->phil_is_full == shared->n_philos)
+	{
+		pthread_mutex_lock(&shared->full_mutex);
+		shared->all_full = true;
+		pthread_mutex_unlock(&shared->full_mutex);
+		return (1);
+	}
+	return (0);
+}
 
-    if (shared->must_eat_times == -1)
-        return 0;
-    while (i < shared->n_philos)
-    {
-        if (shared->philos[i].meals_count >= shared->must_eat_times)
-        {
-            shared->phil_is_full++;
-        }
-        i++;
-    }
+int	is_all_full(t_shared *shared)
+{
+	int	i;
+	int	meals_count;
 
-//    check how many number of philos are full
-    if (shared->phil_is_full == shared->n_philos)
-    {
-        shared->all_full = 1;
-        return 1;
-    }
-    return 0;
+	i = 0;
+	if (shared->must_eat_times == -1)
+		return (0);
+	while (i < shared->n_philos)
+	{
+		pthread_mutex_lock(&shared->generic_mutex);
+		meals_count = shared->philos[i].meals_count;
+		pthread_mutex_unlock(&shared->generic_mutex);
+		if (meals_count == shared->must_eat_times
+			&& shared->philos[i].checked == false)
+		{
+			shared->phil_is_full++;
+			shared->philos[i].checked = true;
+		}
+		i++;
+	}
+	if (check_is_all_full(shared))
+		return (1);
+	return (0);
 }
