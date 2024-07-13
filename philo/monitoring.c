@@ -6,7 +6,7 @@
 /*   By: recherra <recherra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 02:47:51 by recherra          #+#    #+#             */
-/*   Updated: 2024/07/08 02:47:52 by recherra         ###   ########.fr       */
+/*   Updated: 2024/07/13 23:51:53 by recherra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,11 @@ int	is_dead(t_shared *shared)
 		if (get_curr_time() - last_meal >= shared->ttd)
 		{
 			pthread_mutex_unlock(&shared->philos[i].right_fork->fork);
-			print("died", &shared->philos[i]);
 			pthread_mutex_lock(&shared->dead_mutex);
 			shared->dead = true;
 			pthread_mutex_unlock(&shared->dead_mutex);
+			printf("%ld %d %s", get_curr_time() - shared->start_time,
+				shared->philos[i].id, "died\n");
 			return (1);
 		}
 		i++;
