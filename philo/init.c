@@ -32,15 +32,32 @@ static int	create_threads(t_shared *shared)
 		if (pthread_create(&shared->philos[i].thread, NULL, routine,
 				&shared->philos[i]))
 			return (1);
+		pthread_detach(shared->philos[i].thread);
 		i++;
 	}
 	return (0);
 }
 
+void	destroy_all(t_shared *shared)
+{
+	int	i;
+
+	i = 0;
+	pthread_mutex_destroy(&shared->dead_mutex);
+	pthread_mutex_destroy(&shared->full_mutex);
+	pthread_mutex_destroy(&shared->generic_mutex);
+	while (i < shared->n_philos)
+		pthread_mutex_destroy(&shared->forks[i++].fork);
+}
+
+void	testing(void)
+{
+	system("leaks -q philo");
+}
+
 int	main(int ac, char **av)
 {
 	t_shared	*shared;
-	int			i;
 
 	if (pre_check(ac))
 		return (1);
@@ -58,8 +75,6 @@ int	main(int ac, char **av)
 		if (is_dead(shared) || is_all_full(shared))
 			break ;
 	}
-	i = 0;
-	while (i < shared->n_philos)
-		pthread_join(shared->philos[i++].thread, NULL);
+	destroy_all(shared);
 	return (0);
 }
