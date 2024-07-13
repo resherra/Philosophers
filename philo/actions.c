@@ -6,7 +6,7 @@
 /*   By: recherra <recherra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 02:31:20 by recherra          #+#    #+#             */
-/*   Updated: 2024/07/08 02:31:22 by recherra         ###   ########.fr       */
+/*   Updated: 2024/07/13 03:13:11 by recherra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	print(char *msg, t_ph *philo)
 	pthread_mutex_lock(&philo->shared->full_mutex);
 	if (!philo->shared->dead && !philo->shared->all_full)
 		printf("%ld %d %s\n", get_curr_time() - philo->shared->start_time,
-				philo->id, msg);
+			philo->id, msg);
 	pthread_mutex_unlock(&philo->shared->full_mutex);
 	pthread_mutex_unlock(&philo->shared->dead_mutex);
 }

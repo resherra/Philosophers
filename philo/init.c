@@ -22,6 +22,21 @@ static int	pre_check(int ac)
 	return (0);
 }
 
+static int	create_threads(t_shared *shared)
+{
+	int	i;
+
+	i = 0;
+	while (i < shared->n_philos)
+	{
+		if (pthread_create(&shared->philos[i].thread, NULL, routine,
+				&shared->philos[i]))
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
 int	main(int ac, char **av)
 {
 	t_shared	*shared;
@@ -36,13 +51,8 @@ int	main(int ac, char **av)
 		return (1);
 	if (init_all(shared))
 		return (1);
-	i = 0;
-	while (i < shared->n_philos)
-	{
-		pthread_create(&shared->philos[i].thread, NULL, routine,
-				&shared->philos[i]);
-		i++;
-	}
+	if (create_threads(shared))
+		return (1);
 	while (1)
 	{
 		if (is_dead(shared) || is_all_full(shared))
