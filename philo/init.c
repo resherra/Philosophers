@@ -50,11 +50,6 @@ void	destroy_all(t_shared *shared)
 		pthread_mutex_destroy(&shared->forks[i++].fork);
 }
 
-void	testing(void)
-{
-	system("leaks -q philo");
-}
-
 int	main(int ac, char **av)
 {
 	t_shared	*shared;
