@@ -32,6 +32,7 @@ static void	init_data(t_shared *shared)
 	pthread_mutex_init(&shared->dead_mutex, NULL);
 	pthread_mutex_init(&shared->full_mutex, NULL);
 	pthread_mutex_init(&shared->generic_mutex, NULL);
+	pthread_mutex_init(&shared->print_mutex, NULL);
 }
 
 static void	init_forks(t_shared *shared)

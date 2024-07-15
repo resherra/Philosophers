@@ -56,6 +56,7 @@ typedef struct s_shared
 	pthread_mutex_t		dead_mutex;
 	pthread_mutex_t		full_mutex;
 	pthread_mutex_t		generic_mutex;
+	pthread_mutex_t		print_mutex;
 }						t_shared;
 
 int						args_error_handling(char *str);

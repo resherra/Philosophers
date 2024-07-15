@@ -17,6 +17,7 @@ void	print(char *msg, t_ph *philo)
 	bool	dead;
 	bool	full;
 
+	pthread_mutex_lock(&philo->shared->print_mutex);
 	pthread_mutex_lock(&philo->shared->dead_mutex);
 	dead = philo->shared->dead;
 	pthread_mutex_unlock(&philo->shared->dead_mutex);
@@ -26,6 +27,7 @@ void	print(char *msg, t_ph *philo)
 	if (!dead && !full)
 		printf("%ld %d %s\n", get_curr_time() - philo->shared->start_time,
 			philo->id, msg);
+	pthread_mutex_unlock(&philo->shared->print_mutex);
 }
 
 void	eat__(t_ph *philo)
@@ -74,7 +76,6 @@ void	*routine(void *arg)
 		pthread_mutex_unlock(&philo->shared->full_mutex);
 		if (is_dead || is_full)
 			break ;
-		pthread_mutex_unlock(&philo->shared->dead_mutex);
 		eat__(philo);
 		sleep__(philo);
 		think__(philo);
