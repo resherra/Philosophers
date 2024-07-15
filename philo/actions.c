@@ -14,20 +14,13 @@
 
 void	print(char *msg, t_ph *philo)
 {
-	bool	dead;
-	bool	full;
-
 	pthread_mutex_lock(&philo->shared->print_mutex);
 	pthread_mutex_lock(&philo->shared->dead_mutex);
-	dead = philo->shared->dead;
-	pthread_mutex_unlock(&philo->shared->dead_mutex);
-	pthread_mutex_lock(&philo->shared->full_mutex);
-	full = philo->shared->all_full;
-	pthread_mutex_unlock(&philo->shared->full_mutex);
-	if (!dead && !full)
+	if (!philo->shared->dead)
 		printf("%ld %d %s\n", get_curr_time() - philo->shared->start_time,
 			philo->id, msg);
 	pthread_mutex_unlock(&philo->shared->print_mutex);
+	pthread_mutex_unlock(&philo->shared->dead_mutex);
 }
 
 void	eat__(t_ph *philo)
@@ -60,8 +53,6 @@ void	think__(t_ph *philo)
 void	*routine(void *arg)
 {
 	t_ph	*philo;
-	bool	is_dead;
-	bool	is_full;
 
 	philo = (t_ph *)arg;
 	if (!(philo->id % 2))
@@ -69,13 +60,15 @@ void	*routine(void *arg)
 	while (1)
 	{
 		pthread_mutex_lock(&philo->shared->dead_mutex);
-		is_dead = philo->shared->dead;
-		pthread_mutex_unlock(&philo->shared->dead_mutex);
 		pthread_mutex_lock(&philo->shared->full_mutex);
-		is_full = philo->shared->all_full;
-		pthread_mutex_unlock(&philo->shared->full_mutex);
-		if (is_dead || is_full)
+		if (philo->shared->dead  || philo->shared->all_full)
+		{
+			pthread_mutex_unlock(&philo->shared->dead_mutex);
+			pthread_mutex_unlock(&philo->shared->full_mutex);
 			break ;
+		}
+		pthread_mutex_unlock(&philo->shared->dead_mutex);
+		pthread_mutex_unlock(&philo->shared->full_mutex);
 		eat__(philo);
 		sleep__(philo);
 		think__(philo);
