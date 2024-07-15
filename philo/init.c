@@ -6,7 +6,7 @@
 /*   By: recherra <recherra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/24 17:49:40 by recherra          #+#    #+#             */
-/*   Updated: 2024/05/24 17:49:45 by recherra         ###   ########.fr       */
+/*   Updated: 2024/07/16 00:55:16 by recherra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ void	destroy_all(t_shared *shared)
 	pthread_mutex_destroy(&shared->dead_mutex);
 	pthread_mutex_destroy(&shared->full_mutex);
 	pthread_mutex_destroy(&shared->generic_mutex);
-	pthread_mutex_destroy(&shared->print_mutex);
 	while (i < shared->n_philos)
 		pthread_mutex_destroy(&shared->forks[i++].fork);
 }

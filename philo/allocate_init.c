@@ -6,7 +6,7 @@
 /*   By: recherra <recherra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 04:51:02 by recherra          #+#    #+#             */
-/*   Updated: 2024/07/07 04:51:07 by recherra         ###   ########.fr       */
+/*   Updated: 2024/07/16 00:54:56 by recherra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ static void	init_data(t_shared *shared)
 	pthread_mutex_init(&shared->dead_mutex, NULL);
 	pthread_mutex_init(&shared->full_mutex, NULL);
 	pthread_mutex_init(&shared->generic_mutex, NULL);
-	pthread_mutex_init(&shared->print_mutex, NULL);
 }
 
 static void	init_forks(t_shared *shared)

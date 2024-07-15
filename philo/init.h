@@ -6,7 +6,7 @@
 /*   By: recherra <recherra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/24 17:49:49 by recherra          #+#    #+#             */
-/*   Updated: 2024/05/24 17:49:51 by recherra         ###   ########.fr       */
+/*   Updated: 2024/07/16 00:55:32 by recherra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ typedef struct s_shared
 	pthread_mutex_t		dead_mutex;
 	pthread_mutex_t		full_mutex;
 	pthread_mutex_t		generic_mutex;
-	pthread_mutex_t		print_mutex;
 }						t_shared;
 
 int						args_error_handling(char *str);
