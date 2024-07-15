@@ -6,7 +6,7 @@
 /*   By: recherra <recherra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 02:31:20 by recherra          #+#    #+#             */
-/*   Updated: 2024/07/13 23:51:33 by recherra         ###   ########.fr       */
+/*   Updated: 2024/07/15 06:54:36 by recherra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void	*routine(void *arg)
 	{
 		pthread_mutex_lock(&philo->shared->dead_mutex);
 		pthread_mutex_lock(&philo->shared->full_mutex);
-		if (philo->shared->dead  || philo->shared->all_full)
+		if (philo->shared->dead || philo->shared->all_full)
 		{
 			pthread_mutex_unlock(&philo->shared->dead_mutex);
 			pthread_mutex_unlock(&philo->shared->full_mutex);
