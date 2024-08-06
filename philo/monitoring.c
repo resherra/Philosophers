@@ -23,7 +23,7 @@ int	is_dead(t_shared *shared)
 		pthread_mutex_lock(&shared->generic_mutex);
 		last_meal = shared->philos[i].last_meal;
 		pthread_mutex_unlock(&shared->generic_mutex);
-		if (get_curr_time() - last_meal >= shared->ttd)
+		if (get_curr_time() - last_meal > shared->ttd)
 		{
 			pthread_mutex_unlock(&shared->philos[i].right_fork->fork);
 			pthread_mutex_lock(&shared->dead_mutex);
