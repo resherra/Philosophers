@@ -17,8 +17,10 @@ NAME=philo
 
 all: $(NAME)
 
-$(NAME): init.h $(OBJS)
+$(NAME): $(OBJS)
 	cc $(CFLAGS) $(OBJS) -o $(NAME)
+
+$(OBJS): init.h
 
 clean:
 	rm -rf $(OBJS)

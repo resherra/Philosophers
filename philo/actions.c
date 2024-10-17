@@ -15,9 +15,11 @@
 void	print(char *msg, t_ph *philo)
 {
 	pthread_mutex_lock(&philo->shared->dead_mutex);
-	if (!philo->shared->dead)
+	pthread_mutex_lock(&philo->shared->full_mutex);
+	if (!philo->shared->dead && !philo->shared->all_full)
 		printf("%ld %d %s\n", get_curr_time() - philo->shared->start_time,
 			philo->id, msg);
+	pthread_mutex_unlock(&philo->shared->full_mutex);
 	pthread_mutex_unlock(&philo->shared->dead_mutex);
 }
 
@@ -28,11 +30,11 @@ void	eat__(t_ph *philo)
 	pthread_mutex_lock(&philo->left_fork->fork);
 	print("has taken a fork", philo);
 	print("is eating", philo);
+	ft_usleep(philo->shared->tte);
 	pthread_mutex_lock(&philo->shared->generic_mutex);
 	philo->last_meal = get_curr_time();
 	philo->meals_count++;
 	pthread_mutex_unlock(&philo->shared->generic_mutex);
-	ft_usleep(philo->shared->tte);
 	pthread_mutex_unlock(&philo->right_fork->fork);
 	pthread_mutex_unlock(&philo->left_fork->fork);
 }
@@ -54,7 +56,10 @@ void	*routine(void *arg)
 
 	philo = (t_ph *)arg;
 	if (!(philo->id % 2))
+	{
+		think__(philo);
 		ft_usleep(20);
+	}
 	while (1)
 	{
 		pthread_mutex_lock(&philo->shared->dead_mutex);
