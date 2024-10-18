@@ -16,20 +16,22 @@ int	is_dead(t_shared *shared)
 {
 	int		i;
 	long	last_meal;
+	long	die_time;
 
 	i = 0;
 	while (i < shared->n_philos)
 	{
+		die_time = get_curr_time();
 		pthread_mutex_lock(&shared->generic_mutex);
 		last_meal = shared->philos[i].last_meal;
 		pthread_mutex_unlock(&shared->generic_mutex);
-		if (get_curr_time() - last_meal > shared->ttd)
+		if (die_time - last_meal > shared->ttd)
 		{
 			pthread_mutex_unlock(&shared->philos[i].right_fork->fork);
 			pthread_mutex_lock(&shared->dead_mutex);
 			shared->dead = true;
 			pthread_mutex_unlock(&shared->dead_mutex);
-			printf("%ld %d %s", get_curr_time() - shared->start_time,
+			printf("%ld %d %s", die_time - shared->start_time,
 				shared->philos[i].id, "died\n");
 			return (1);
 		}
